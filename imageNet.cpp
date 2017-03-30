@@ -222,3 +222,61 @@ int imageNet::Classify( float* rgba, uint32_t width, uint32_t height, float* con
 	return classIndex;
 }
 
+
+// from imageNet.cu
+cudaError_t cudaPreImageNetMeanROI( float4* input, size_t inputWidth, size_t inputHeight, float* output, size_t outputWidth, size_t outputHeight, size_t roix_start, size_t roiy_start, const float3& mean_value );
+					
+					
+// Classify
+int imageNet::ClassifyROI( float* rgba, uint32_t width, uint32_t height, uint32_t roix_start, uint32_t roiy_start, float* confidence )
+{
+	if( !rgba || width == 0 || height == 0 )
+	{
+		printf("imageNet::Classify( 0x%p, %u, %u ) -> invalid parameters\n", rgba, width, height);
+		return -1;
+	}
+
+	
+	// downsample and convert to band-sequential BGR
+	if( CUDA_FAILED(cudaPreImageNetMeanROI((float4*)rgba, width, height, mInputCUDA, mWidth, mHeight, roix_start, roiy_start,
+								 make_float3(104.0069879317889f, 116.66876761696767f, 122.6789143406786f) )) )
+	{
+		printf("imageNet::Classify() -- cudaPreImageNetMean failed\n");
+		return -1;
+	}
+	
+
+	// process with GIE
+	void* inferenceBuffers[] = { mInputCUDA, mOutputs[0].CUDA };
+	
+	mContext->execute(1, inferenceBuffers);
+	
+	//CUDA(cudaDeviceSynchronize());
+	PROFILER_REPORT();
+	
+	
+	// determine the maximum class
+	int classIndex = -1;
+	float classMax = -1.0f;
+	
+	for( size_t n=0; n < mOutputClasses; n++ )
+	{
+		const float value = mOutputs[0].CPU[n];
+		
+		if( value >= 0.01f )
+			printf("class %04zu - %f  (%s)\n", n, value, mClassDesc[n].c_str());
+	
+		if( value > classMax )
+		{
+			classIndex = n;
+			classMax   = value;
+		}
+	}
+	
+	if( confidence != NULL )
+		*confidence = classMax;
+	
+	//printf("\nmaximum class:  #%i  (%f) (%s)\n", classIndex, classMax, mClassDesc[classIndex].c_str());
+	return classIndex;
+}
+

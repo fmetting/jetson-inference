@@ -58,6 +58,8 @@ public:
 	 */
 	int Classify( float* rgba, uint32_t width, uint32_t height, float* confidence=NULL );
 
+        int ClassifyROI( float* rgba, uint32_t width, uint32_t height, uint32_t roix_start, uint32_t roiy_start, float* confidence=NULL );
+
 	/**
 	 * Retrieve the number of image recognition classes (typically 1000)
 	 */
