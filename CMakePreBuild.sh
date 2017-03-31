@@ -35,6 +35,13 @@ mv bvlc_alexnet.caffemodel ../data/networks
 wget --no-check-certificate 'https://nvidia.box.com/shared/static/at8b1105ww1c5h7p30j5ko8qfnxrs0eg.caffemodel' -O bvlc_googlenet.caffemodel
 mv bvlc_googlenet.caffemodel ../data/networks
 
+# uncomment to download AlexNet based 54PlayingCards (212MB)
+perl gdown.pl 'https://drive.google.com/file/d/0B8dR1eAmu3fTWWpkSEVLV0Z5TVE/view?usp=sharing' 'alexnet_54cards.tar.gz'
+tar -xzvf alexnet_54cards.tar.gz -C ../data/networks
+
+# uncomment to download DetectNet based CardNet
+perl gdown.pl 'https://drive.google.com/file/d/0B8dR1eAmu3fTMU9Vb3p1S05Bclk/view?usp=sharing' 'cardnet-100.tar.gz'
+tar -xzvf cardnet-100.tar.gz -C ../data/networks
 
 # DetectNet's  (uncomment to download)
 wget --no-check-certificate 'https://drive.google.com/uc?export=download&id=0BwYxpotGWRNOMzVRODNuSHlvbms' -O ped-100.tar.gz
