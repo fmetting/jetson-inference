@@ -22,6 +22,7 @@ public:
 	enum NetworkType
 	{
 		ALEXNET,
+                ALEXNET_54CARDS,
 		GOOGLENET
 	};
 

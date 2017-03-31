@@ -49,6 +49,8 @@ int main( int argc, char** argv )
 
 	if( argc > 1 && strcmp(argv[1], "alexnet") == 0 )
 		networkType = imageNet::ALEXNET;
+        if( argc > 1 && strcmp(argv[1], "alexnet_54cards") == 0)
+                networkType = imageNet::ALEXNET_54CARDS;
 		
 	if( signal(SIGINT, sig_handler) == SIG_ERR )
 		printf("\ncan't catch SIGINT\n");
