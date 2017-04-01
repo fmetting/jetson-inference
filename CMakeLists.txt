@@ -89,6 +89,7 @@ file(COPY "tools/segnet-batch.sh" DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 add_subdirectory(imagenet-console)
 add_subdirectory(imagenet-camera)
 
+add_subdirectory(blackjack-camera)
 add_subdirectory(detectnet-console)
 add_subdirectory(detectnet-camera)
 
