@@ -23,7 +23,8 @@ public:
 	{
 		PEDNET = 0,		/**< Pedestrian / person detector */
 		PEDNET_MULTI,	/**< Multi-class pedestrian + baggage detector */
-		FACENET			/**< Human facial detector trained on FDDB */
+		CARDNET,        /** Playing Card Detector */
+                FACENET			/**< Human facial detector trained on FDDB */
 	};
 
 	/**

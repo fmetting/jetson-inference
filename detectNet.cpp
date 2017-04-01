@@ -19,6 +19,8 @@ detectNet* detectNet::Create( NetworkType networkType, float threshold  )
 {
 	if( networkType == PEDNET_MULTI )
 		return Create("multiped-500/deploy.prototxt", "multiped-500/snapshot_iter_178000.caffemodel", "multiped-500/mean.binaryproto", threshold );
+        else if( networkType == CARDNET )
+		return Create("cardnet-100/deploy.prototxt", "cardnet-100/snapshot_iter_10500.caffemodel", NULL, threshold );
 	else if( networkType == FACENET )
 		return Create("facenet-120/deploy.prototxt", "facenet-120/snapshot_iter_24000.caffemodel", NULL, threshold );
 	else /*if( networkTYpe == PEDNET )*/
