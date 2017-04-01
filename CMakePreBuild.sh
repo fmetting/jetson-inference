@@ -35,6 +35,8 @@ mv bvlc_alexnet.caffemodel ../data/networks
 wget --no-check-certificate 'https://nvidia.box.com/shared/static/at8b1105ww1c5h7p30j5ko8qfnxrs0eg.caffemodel' -O bvlc_googlenet.caffemodel
 mv bvlc_googlenet.caffemodel ../data/networks
 
+mv ../gdown.pl gdown.pl
+
 # uncomment to download AlexNet based 54PlayingCards (212MB)
 perl gdown.pl 'https://drive.google.com/file/d/0B8dR1eAmu3fTWWpkSEVLV0Z5TVE/view?usp=sharing' 'alexnet_54cards.tar.gz'
 tar -xzvf alexnet_54cards.tar.gz -C ../data/networks
