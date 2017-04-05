@@ -20,7 +20,7 @@
 #include "detectNet.h"
 #include "imageNet.h"
 
-#define DEFAULT_CAMERA -1	// -1 for onboard camera, or change to index of /dev/video V4L2 camera (>=0)	
+#define DEFAULT_CAMERA 1	// -1 for onboard camera, or change to index of /dev/video V4L2 camera (>=0)	
 		
 
 bool signal_recieved = false;
@@ -202,16 +202,21 @@ int main( int argc, char** argv )
 			{
 				const int nc = confCPU[n*2+1];
 				float* bb = bbCPU + (n * 4);
-				
-				printf("bounding box %i   (%f, %f)  (%f, %f)  w=%f  h=%f\n", n, bb[0], bb[1], bb[2], bb[3], bb[2] - bb[0], bb[3] - bb[1]); 
-                                bbox_x1[n] = (int) (bb[0]+.5);
-                                bbox_y1[n] = (int) (bb[1]+.5);
-                                bbox_x2[n] = (int) (bb[2]+.5);
-                                bbox_y2[n] = (int) (bb[3]+.5);
+                                printf("bounding box %i   (%f, %f)  (%f, %f)  w=%f  h=%f\n", n, bb[0], bb[1], bb[2], bb[3], bb[2] - bb[0], bb[3] - bb[1]); 
+                                 
+                                if (bb[0] < 0.0) bbox_x1[n] = 0; 
+                                 else bbox_x1[n] = (int) (bb[0]+.5);
+                                if (bb[1] < 0.0) bbox_y1[n] = 0;
+                                 else bbox_y1[n] = (int) (bb[1]+.5);
+                                if (bb[2] > 1279) bbox_x2[n] = 1279;
+                                 else bbox_x2[n] = (int) (bb[2]+.5);
+                                if (bb[3] > 719) bbox_y2[n] = 719;
+                                 else bbox_y2[n] = (int) (bb[3]+.5);
+
                                 crop_width = bbox_x2[n] - bbox_x1[n]; 
                                 crop_height = bbox_y2[n] - bbox_y1[n];
                                 const int img_class = net2->ClassifyROI((float*)imgRGBA, crop_width, crop_height, bbox_x1[n], bbox_y1[n], &confidence);
-		                if( img_class >= 0 )
+		                if( img_class >= 0 ) //&& confidence >= .8
                                 {
 			          printf("imagenet:  %2.5f%% class #%i (%s)\n", confidence * 100.0f, img_class, net2->GetClassDesc(img_class));
                                   if (bbox_y1[n] < 360) {
@@ -443,7 +448,7 @@ int main( int argc, char** argv )
                                  } // end if img_class
                                 
 
-                               if( font != NULL ) {
+                                if( font != NULL ) {
 				
 				sprintf(str, "%s", net2->GetClassDesc(img_class));
 				
