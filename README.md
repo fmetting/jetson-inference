@@ -2,7 +2,7 @@
 
 This is a fork of NVIDIA's deep learning inference library. If you haven't seen used that yet then I strongly advise you to use that use that as a starting point, and that can be obtained on [GitHub](http://github.com/dusty-nv/jetson-inference). Most everything here was copied from there, and mutilated by someone who hacks together some code once every 5 years or so. So best practices are not exactly followed.  
 
-The main purpose of this fork is to test out pipelining DetectNet, and ImageNet. Where DetectNet is used to detect the presense of a type of object (car, boat, plane), and an ImageNet model is used to further classify the detected object (what make/model car, what type of plane, etc).
+The main purpose of this fork is to test out pipelining DetectNet, and ImageNet. Where DetectNet is used to detect the presence of a type of object (car, boat, plane), and an ImageNet model is used to further classify the detected object (what make/model car, what type of plane, etc).
 
 This repository is kept as close to jetson-inference as possible with only adding a few routines that were needed. The ImageNet and DetectNet examples should work as they did.
 
@@ -177,7 +177,7 @@ By default, it uses USB camera at device 1. To change this you'll need to change
 
 To play the game have the camera facing down towards the table. Half of the image is the computer playing area, and half of it is the human side. Simply deal a card to the computer side, and then the human side. The computer will tell you when it wants to hit or stand. To tell the computer that you want to stand then simply use the Red Joker to tell it you're staying. As of now the game is pretty limited in that it doesn't know the ACE can be different values. It's only intended as a demonstration of what's possible with combining ImageNet and DetectNet. 
 
-If you find that it's not recongizing cards correctly then move the camera up or down. It also struggles with cards that are too close together. The detectnet detects them as a single card and it screws everything up. You also can't have overlaying cards. 
+If you find that it's not recognizing cards correctly then move the camera up or down. It also struggles with cards that are too close together. The detectnet detects them as a single card and it screws everything up. You also can't have overlaying cards. 
 
 Here is what it should look like. This image shows an 11x17 piece of paper I used to act as the playing table with outlines for the cards, but this isn't needed. 
 
