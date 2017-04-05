@@ -52,6 +52,8 @@ int main( int argc, char** argv )
 	{
 		if( strcmp(argv[1], "multiped") == 0 || strcmp(argv[1], "pednet") == 0 || strcmp(argv[1], "multiped-500") == 0 )
 			networkType = detectNet::PEDNET_MULTI;
+                else if( strcmp(argv[1], "cardnet") == 0 )
+			networkType = detectNet::CARDNET;
 		else if( strcmp(argv[1], "ped-100") == 0 )
 			networkType = detectNet::PEDNET;
 		else if( strcmp(argv[1], "facenet") == 0 || strcmp(argv[1], "facenet-120") == 0 || strcmp(argv[1], "face-120") == 0 )

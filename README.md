@@ -6,7 +6,8 @@ The main purpose of this fork is to test out pipelining DetectNet, and ImageNet.
 
 This repository is kept as close to jetson-inference as possible with only adding a few routines that were needed. The ImageNet and DetectNet examples should work as they did.
 
-I added one example program called BlackJack-Camera. This is a very simplified BlackJack game that relies on the camera to see the cards being dealt. Essentially whoever is closer to 21 without going over is the winner. Right now the computer stays at 17, but in some future version I hope to add a jetson-reinforcement code for the decision making process. I also plan on adding card counting since what's the point of having a computer play if the computer can't run probability calculations? 
+I added two example demos. One of these demos is dualnet-camera that combines image detection and recognition. The other demo is a very simplified live-camera based blackjack game. 
+
 
 ## Building from Source
 Provided along with this repo are TensorRT-enabled examples of running Googlenet/Alexnet on live camera feed for image recognition, and pedestrian detection networks with localization capabilities (i.e. that provide bounding boxes). 
@@ -147,7 +148,7 @@ Similar to the previous example, [`detectnet-camera`](detectnet-camera/detectnet
 $ ./detectnet-camera multiped       # run using multi-class pedestrian/luggage detector
 $ ./detectnet-camera ped-100        # run using original single-class pedestrian detector
 $ ./detectnet-camera facenet        # run using facial recognition network
-$ ./detectnet-camera cardnet-100    # run using Playing Card detection network
+$ ./detectnet-camera cardnet        # run using Playing Card detection network
 $ ./detectnet-camera                # by default, program will run using multiped
 ```
 
@@ -156,6 +157,15 @@ $ ./detectnet-camera                # by default, program will run using multipe
 <br/>
 
 > **note**:  by default, the Jetson's onboard CSI camera will be used as the video source.  If you wish to use a USB webcam instead, change the `DEFAULT_CAMERA` define at the top of [`detectnet-camera.cpp`](detectnet-camera/detectnet-camera.cpp) to reflect the /dev/video V4L2 device of your USB camera.  The model it's tested with is Logitech C920.  
+
+## Running the DualNet Demo
+
+The [`dualnet-camera`](dualnet-camera/dualnet-camera.cpp) combines the detection (DetectNet) and recognition (ImageNet) on the live video feed from the Jetson onboard camera. Launch it from the command line along with the desired networks. Where the first network is the DetectNet network, and the second network is the ImageNet Network.
+
+``` bash
+$ ./detectnet-camera cardnet alexnet_54cards  # run using PlayingCard Detection, and PlayingCard recognition
+$ ./detectnet-camera                          # by default it runs using PlayingCard Detection, and PlayingCard recognition 
+```
 
 ## Running the BlackJack Camera Demo
 
