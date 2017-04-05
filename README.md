@@ -1,13 +1,12 @@
 # DUAL NET INFERENCE
 
-This is a branch of NVIDIA's deep learning inference library.
+This is a fork of NVIDIA's deep learning inference library. I strongly advise you to use that use that as a starting point, and that can be obtained on [GitHub](http://github.com/dusty-nv/jetson-inference).
 
-The main purpose of this branch is to test out pipelining DetectNet, and ImageNet. Where DetectNet is used to detect the presense of a type of object (car, boat, plane), and an ImageNet model is used to further classify the detected object (what make/model car, what type of plane, etc).
+The main purpose of this fork is to test out pipelining DetectNet, and ImageNet. Where DetectNet is used to detect the presense of a type of object (car, boat, plane), and an ImageNet model is used to further classify the detected object (what make/model car, what type of plane, etc).
 
-I kept this repository as close to jetson-inference as possible with only adding a few routines that were needed. All the previous examples should work as they did.
+I kept this repository as close to jetson-inference as possible with only adding a few routines that were needed. The ImageNet and DetectNet examples should work as they did.
 
 I added one example program called BlackJack-Camera. This is a very simplified BlackJack game that relies on the camera to see the cards being dealt. Essentially whoever is closer to 21 without going over is the winner. Right now the computer stays at 17, but in some future version I hope to add a jetson-reinforcement code for the decision making process. I also plan on adding card counting since what's the point of having a computer play if the computer can't run probability calculations? 
-
 
 ## Building from Source
 Provided along with this repo are TensorRT-enabled examples of running Googlenet/Alexnet on live camera feed for image recognition, and pedestrian detection networks with localization capabilities (i.e. that provide bounding boxes). 
@@ -65,56 +64,6 @@ Depending on architecture, the package will be built to either armhf or aarch64,
 
 binaries residing in aarch64/bin, headers in aarch64/include, and libraries in aarch64/lib.
 
-## Digging Into the Code
-
-For reference, see the available vision primitives, including [`imageNet`](imageNet.h) for image recognition and [`detectNet`](detectNet.h) for object localization.
-
-``` c++
-/**
- * Image recognition with GoogleNet/Alexnet or custom models, using TensorRT.
- */
-class imageNet : public tensorNet
-{
-public:
-	/**
-	 * Network choice enumeration.
-	 */
-	enum NetworkType
-	{
-		ALEXNET,
-		GOOGLENET
-	};
-
-	/**
-	 * Load a new network instance
-	 */
-	static imageNet* Create( NetworkType networkType=GOOGLENET );
-	
-	/**
-	 * Load a new network instance
-	 * @param prototxt_path File path to the deployable network prototxt
-	 * @param model_path File path to the caffemodel
-	 * @param mean_binary File path to the mean value binary proto
-	 * @param class_info File path to list of class name labels
-	 * @param input Name of the input layer blob.
-	 */
-	static imageNet* Create( const char* prototxt_path, const char* model_path, const char* mean_binary,
-							 const char* class_labels, const char* input="data", const char* output="prob" );
-
-	/**
-	 * Determine the maximum likelihood image class.
-	 * @param rgba float4 input image in CUDA device memory.
-	 * @param width width of the input image in pixels.
-	 * @param height height of the input image in pixels.
-	 * @param confidence optional pointer to float filled with confidence value.
-	 * @returns Index of the maximum class, or -1 on error.
-	 */
-	int Classify( float* rgba, uint32_t width, uint32_t height, float* confidence=NULL );
-};
-```
-
-Both inherit from the shared [`tensorNet`](tensorNet.h) object which contains common TensorRT code.
-
 ## Classifying Images with ImageNet
 There are multiple types of deep learning networks available, including recognition, detection/localization, and soon segmentation.  The first deep learning capability to highlight is **image recognition** using an 'imageNet' that's been trained to identify similar objects.
 
@@ -158,28 +107,6 @@ The frames per second (FPS), classified object name from the video, and confiden
 <a href="https://a70ad2d16996820e6285-3c315462976343d903d5b3a03b69072d.ssl.cf2.rackcdn.com/399176be3f3ab2d9bfade84e0afe2abd"><img src="https://a70ad2d16996820e6285-3c315462976343d903d5b3a03b69072d.ssl.cf2.rackcdn.com/399176be3f3ab2d9bfade84e0afe2abd" width="800"></a>
 <a href="https://a70ad2d16996820e6285-3c315462976343d903d5b3a03b69072d.ssl.cf2.rackcdn.com/93071639e44913b6f23c23db2a077da3"><img src="https://a70ad2d16996820e6285-3c315462976343d903d5b3a03b69072d.ssl.cf2.rackcdn.com/93071639e44913b6f23c23db2a077da3" width="800"></a>
 
-## Re-training the Network with Customized Data
-
-The existing GoogleNet and AlexNet models that are downloaded by the repo are pre-trained on [1000 classes of objects](data/networks/ilsvrc12_synset_words.txt).
-
-What if you require a new object class to be added to the network, or otherwise require a different organization of the classes?  
-
-Using [NVIDIA DIGITS](http://github.com/NVIDIA/DIGITS), networks can be fine-tuned or re-trained from a pre-exisiting network model.
-After installing DIGITS on a PC or in the cloud (such as an AWS instance), see the **[Image Folder Specification](https://github.com/NVIDIA/DIGITS/blob/master/docs/ImageFolderFormat.md)** to learn how to organize the data for your particular application.
-
-Popular training databases with various annotations and labels include [ImageNet](image-net.org), [MS COCO](mscoco.org), and [Google Images](images.google.com) among others.
-
-See [here](http://www.deepdetect.com/tutorials/train-imagenet/) under the `Downloading the dataset` section to obtain a crawler script that will download the 1000 original classes, including as many of the original images that are still available online.
-
-> **note**: be considerate running the crawler script from a corporate network, they may flag the activity.
-> It will probably take overnight on a decent connection to download the 1000 ILSVRC12 classes (100GB) from ImageNet (1.2TB)
-
-Then, while creating the new network model in DIGITS, copy the [GoogleNet prototxt](data/networks/googlenet.prototxt) and specify the existing GoogleNet caffemodel as the DIGITS **Pretrained Model**:
-
-<a href="https://a70ad2d16996820e6285-3c315462976343d903d5b3a03b69072d.ssl.cf2.rackcdn.com/610745a8bafae4a5686d45901f5cc6f3"><img src="https://a70ad2d16996820e6285-3c315462976343d903d5b3a03b69072d.ssl.cf2.rackcdn.com/610745a8bafae4a5686d45901f5cc6f3" width="800"></a>
-
-The network training should now converge faster than if it were trained from scratch.  After the desired accuracy has been reached, copy the new model checkpoint back over to your Jetson and proceed as before, but now with the added classes available for recognition.
-
 ## Locating Object Coordinates using DetectNet
 The previous image recognition examples output class probabilities representing the entire input image.   The second deep learning capability to highlight is detecting multiple objects, and finding where in the video those objects are located (i.e. extracting their bounding boxes).  This is performed using a 'detectNet' - or object detection / localization network.
 
@@ -220,12 +147,14 @@ Similar to the previous example, [`detectnet-camera`](detectnet-camera/detectnet
 $ ./detectnet-camera multiped       # run using multi-class pedestrian/luggage detector
 $ ./detectnet-camera ped-100        # run using original single-class pedestrian detector
 $ ./detectnet-camera facenet        # run using facial recognition network
+$ ./detectnet-camera cardnet-100    # run using Playing Card detection network
 $ ./detectnet-camera                # by default, program will run using multiped
 ```
 
 > **note**:  to achieve maximum performance while running detectnet, increase the Jetson TX1 clock limits by running the script:
 >  `sudo ~/jetson_clocks.sh`
 <br/>
+
 > **note**:  by default, the Jetson's onboard CSI camera will be used as the video source.  If you wish to use a USB webcam instead, change the `DEFAULT_CAMERA` define at the top of [`detectnet-camera.cpp`](detectnet-camera/detectnet-camera.cpp) to reflect the /dev/video V4L2 device of your USB camera.  The model it's tested with is Logitech C920.  
 
 ## Running the BlackJack Camera Demo
@@ -233,24 +162,8 @@ $ ./detectnet-camera                # by default, program will run using multipe
 ``` bash
 $ ./blackjack-camera                # by default, program will run using the correct networks
 ```
+
+By default, it uses USB camera at device 1. To change you'll need to change the `DEFAULT_CAMERA` define at the top of [`blackjack-camera.cpp`](blackjack-camera/blackjack-camera.cpp) to reflect the /dev/video V4L2 device of your USB camera.  The model it's tested with is Logitech C920.  
+
 <img src="https://github.com/S4WRXTTCS/jetson-inference/blob/master/data/images/BlackJack.jpg" width="900">
-
-## Re-training DetectNet with DIGITS
-
-For a step-by-step guide to training custom DetectNets, see the **[Object Detection](https://github.com/NVIDIA/DIGITS/tree/digits-4.0/examples/object-detection)** example included in DIGITS version 4:
-
-<a href="https://github.com/NVIDIA/DIGITS/tree/digits-4.0/examples/object-detection"><img src="https://a70ad2d16996820e6285-3c315462976343d903d5b3a03b69072d.ssl.cf2.rackcdn.com/0c1a5ee3ab9c4629ac61cbbe9aae3e10" width="500"></a>
-
-The DIGITS guide above uses the [KITTI](http://www.cvlibs.net/datasets/kitti/) dataset, however [MS COCO](http://mscoco.org) also has bounding data available for a variety of objects.
-
-
-## Extra Resources
-
-In this area, links and resources for deep learning developers are listed:
-
-* [Appendix](docs/aux-contents.md)
-	* [NVIDIA Deep Learning Institute](https://developer.nvidia.com/deep-learning-institute) — [Introductory QwikLabs](https://developer.nvidia.com/deep-learning-courses)
-     * [Building nvcaffe](docs/building-nvcaffe.md)
-	* [Other Examples](docs/other-examples.md)
-	* [ros_deep_learning](http://www.github.com/dusty-nv/ros_deep_learning) - TensorRT inference ROS nodes
 
