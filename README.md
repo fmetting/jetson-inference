@@ -163,7 +163,13 @@ $ ./detectnet-camera                # by default, program will run using multipe
 $ ./blackjack-camera                # by default, program will run using the correct networks
 ```
 
-By default, it uses USB camera at device 1. To change you'll need to change the `DEFAULT_CAMERA` define at the top of [`blackjack-camera.cpp`](blackjack-camera/blackjack-camera.cpp) to reflect the /dev/video V4L2 device of your USB camera.  The model it's tested with is Logitech C920.  
+By default, it uses USB camera at device 1. To change this you'll need to change the `DEFAULT_CAMERA` define at the top of [`blackjack-camera.cpp`](blackjack-camera/blackjack-camera.cpp) to reflect the /dev/video V4L2 device of your USB camera.  The model it's tested with is Logitech C920.  
+
+To play the game have the camera facing down towards the table. Half of the image is the computer playing area, and half of it is the human side. Simply deal a card to the computer side, and then the human side. The computer will tell you when it wants to hit or stand. To tell the computer that you want to stand then simply use the Red Joker to tell it you're staying. As of now the game is pretty limited in that it doesn't know the ACE can be different values. It's only intended as a demonstration of what's possible with combining ImageNet and DetectNet. 
+
+If you find that it's not recongizing cards correctly then move the camera up or down. It also struggles with cards that are too close together. The detectnet detects them as a single card and it screws everything up. You also can't have overlaying cards. 
+
+Here is what it should look like. This image shows an 11x17 piece of paper I used to act as the playing table with outlines for the cards, but this isn't needed. 
 
 <img src="https://github.com/S4WRXTTCS/jetson-inference/blob/master/data/images/BlackJack.jpg" width="900">
 
