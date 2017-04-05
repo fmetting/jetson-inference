@@ -228,6 +228,13 @@ $ ./detectnet-camera                # by default, program will run using multipe
 <br/>
 > **note**:  by default, the Jetson's onboard CSI camera will be used as the video source.  If you wish to use a USB webcam instead, change the `DEFAULT_CAMERA` define at the top of [`detectnet-camera.cpp`](detectnet-camera/detectnet-camera.cpp) to reflect the /dev/video V4L2 device of your USB camera.  The model it's tested with is Logitech C920.  
 
+## Running the BlackJack Camera Demo
+
+``` bash
+$ ./blackjack-camera                # by default, program will run using the correct networks
+```
+<img src="https://github.com/S4WRXTTCS/jetson-inference/blob/master/data/images/BlackJack.jpg" width="900">
+
 ## Re-training DetectNet with DIGITS
 
 For a step-by-step guide to training custom DetectNets, see the **[Object Detection](https://github.com/NVIDIA/DIGITS/tree/digits-4.0/examples/object-detection)** example included in DIGITS version 4:
@@ -236,11 +243,6 @@ For a step-by-step guide to training custom DetectNets, see the **[Object Detect
 
 The DIGITS guide above uses the [KITTI](http://www.cvlibs.net/datasets/kitti/) dataset, however [MS COCO](http://mscoco.org) also has bounding data available for a variety of objects.
 
-## Running the BlackJack Camera Demo
-
-``` bash
-$ ./blackjack-camera                # by default, program will run using the correct networks
-```
 
 ## Extra Resources
 
