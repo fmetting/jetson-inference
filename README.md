@@ -1,10 +1,10 @@
 # DUAL NET INFERENCE
 
-This is a fork of NVIDIA's deep learning inference library. I strongly advise you to use that use that as a starting point, and that can be obtained on [GitHub](http://github.com/dusty-nv/jetson-inference).
+This is a fork of NVIDIA's deep learning inference library. If you haven't seen used that yet then I strongly advise you to use that use that as a starting point, and that can be obtained on [GitHub](http://github.com/dusty-nv/jetson-inference). Most everything here was copied from there, and mutilated by someone who hacks together some code once every 5 years or so. So best practices are not exactly followed.  
 
 The main purpose of this fork is to test out pipelining DetectNet, and ImageNet. Where DetectNet is used to detect the presense of a type of object (car, boat, plane), and an ImageNet model is used to further classify the detected object (what make/model car, what type of plane, etc).
 
-I kept this repository as close to jetson-inference as possible with only adding a few routines that were needed. The ImageNet and DetectNet examples should work as they did.
+This repository is kept as close to jetson-inference as possible with only adding a few routines that were needed. The ImageNet and DetectNet examples should work as they did.
 
 I added one example program called BlackJack-Camera. This is a very simplified BlackJack game that relies on the camera to see the cards being dealt. Essentially whoever is closer to 21 without going over is the winner. Right now the computer stays at 17, but in some future version I hope to add a jetson-reinforcement code for the decision making process. I also plan on adding card counting since what's the point of having a computer play if the computer can't run probability calculations? 
 
@@ -163,7 +163,7 @@ $ ./detectnet-camera                # by default, program will run using multipe
 $ ./blackjack-camera                # by default, program will run using the correct networks
 ```
 
-By default, it uses USB camera at device 1. To change this you'll need to change the `DEFAULT_CAMERA` define at the top of [`blackjack-camera.cpp`](blackjack-camera/blackjack-camera.cpp) to reflect the /dev/video V4L2 device of your USB camera.  The model it's tested with is Logitech C920.  
+By default, it uses USB camera at device 1. To change this you'll need to change the `DEFAULT_CAMERA` define at the top of [`blackjack-camera.cpp`](blackjack-camera/blackjack-camera.cpp) to reflect the /dev/video V4L2 device of your USB camera.  The model it's tested with is Logitech C920. The internal camera can be used, but isn't advised.  
 
 To play the game have the camera facing down towards the table. Half of the image is the computer playing area, and half of it is the human side. Simply deal a card to the computer side, and then the human side. The computer will tell you when it wants to hit or stand. To tell the computer that you want to stand then simply use the Red Joker to tell it you're staying. As of now the game is pretty limited in that it doesn't know the ACE can be different values. It's only intended as a demonstration of what's possible with combining ImageNet and DetectNet. 
 
