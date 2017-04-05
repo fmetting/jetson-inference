@@ -1,79 +1,21 @@
 ![Alt text](https://a70ad2d16996820e6285-3c315462976343d903d5b3a03b69072d.ssl.cf2.rackcdn.com/841b9209217f74e5992b8d332c612126)
-# Deploying Deep Learning
-Welcome to NVIDIA's guide to deploying inference and our embedded deep vision runtime library for **[Jetson TX1/TX2](http://www.nvidia.com/object/embedded-systems.html)**.
+# DUAL NET INFERENCE
 
-Included in this repo are resources for efficiently deploying neural networks into the field using NVIDIA **[TensorRT](https://developer.nvidia.com/tensorrt)**.
+This is a branch of NVIDIA's deep learning inference library.
 
-Vision primitives, such as [`imageNet`](imageNet.h) for image recognition, [`detectNet`](detectNet.h) for object localization, and [`segNet`](segNet.h) for segmentation, inherit from the shared [`tensorNet`](tensorNet.h) object.  Examples are provided for streaming from live camera feed and processing images from disk.  The actions to understand and apply these are represented as ten easy-to-follow steps.
+The main purpose of this branch is to test out pipelining DetectNet, and ImageNet. Where DetectNet is used to detect the presense of a type of object (car, boat, plane), and an ImageNet model is used to further classify the detected object (what make/model car, what type of plane, etc).
 
-<img src="https://github.com/dusty-nv/jetson-inference/raw/master/docs/images/deep-vision-primitives.png" width="800">
+I kept this repository as close to jetson-inference as possible with only adding a few routines that were needed. All the previous examples should work as they did.
 
-> **note**:  see the **[Deep Vision API Reference Guide](https://rawgit.com/dusty-nv/jetson-inference/master/docs/html/index.html)** for complete documentation accompaning this tutorial. 
+I added one example program called BlackJack-Camera. This is a very simplified BlackJack game that relies on the camera to see the cards being dealt. Essentially whoever is closer to 21 without going over is the winner. Right now the computer stays at 17, but in some future version I hope to add a jetson-reinforcement code for the decision making process. I also plan on adding card counting since what's the point of having a computer play if the computer can't run probability calculations? 
 
-### **Ten Steps to Deep Learning**
-
-1. [What's Deep Learning?](#whats-deep-learning)
-2. [Flashing JetPack-L4T to Jetson](#getting-tensorrt)
-3. [Building from Source](#building-from-source)
-4. [Digging Into the Code](#digging-into-the-code)
-5. [Classify Images with ImageNet](#classifying-images-with-imagenet)
-6. [Run the Live Camera Recognition Demo](#running-the-live-camera-recognition-demo)
-7. [Re-train the Network with Customized Data](#re-training-the-network-with-customized-data)
-8. [Locate Object Coordinates using DetectNet](#locating-object-coordinates-using-detectNet)
-9. [Run the Live Camera Detection Demo](#running-the-live-camera-detection-demo)
-10. [Re-train DetectNet with DIGITS](#re-training-detectnet-with-digits)
-
-
-**Recommended System Requirements**
-
-Training GPU:  Maxwell or Pascal-based TITAN-X, Tesla M40, P40 or AWS P2 instance.  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ubuntu 14.04 x86_64 or Ubuntu 16.04 x86_64 (see DIGITS [AWS AMI](https://aws.amazon.com/marketplace/pp/B01LZN28VD) image).
-
-Deployment:    &nbsp;&nbsp;Jetson TX2 Developer Kit with JetPack 3.0 or newer (Ubuntu 16.04 aarch64).  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Jetson TX1 Developer Kit with JetPack 2.3 or newer (Ubuntu 16.04 aarch64).
-
-> **note**:  this [branch](http://github.com/dusty-nv/jetson-inference) is verified against the following BSP versions for Jetson TX1/TX2: <br/>
-> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;> Jetson TX2 - JetPack 3.0 / L4T R27.1 aarch64 (Ubuntu 16.04 LTS) <br/>
-> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;> Jetson TX1 - JetPack 2.3 / L4T R24.2 aarch64 (Ubuntu 16.04 LTS) <br/>
-> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;> Jetson TX1 - JetPack 2.3.1 / L4T R24.2.1 aarch64 (Ubuntu 16.04 LTS)
-
-Note that TensorRT samples from the repo are intended for deployment on embedded Jetson TX1/TX2 module, however when cuDNN and TensorRT have been installed on the host side, the TensorRT samples in the repo can be compiled for PC.
-
-## What's Deep Learning?
-
-New to deep neural networks (DNNs) and machine learning?  Take this [introductory primer](docs/deep-learning.md) on training and inference.
-
-<a href="https://github.com/dusty-nv/jetson-inference/blob/master/docs/deep-learning.md"><img src="https://a70ad2d16996820e6285-3c315462976343d903d5b3a03b69072d.ssl.cf2.rackcdn.com/7aca8779d265a860d5133cdc8c6c6b76" width="800"></a>
-
-Using NVIDIA deep learning tools, it's easy to **[Get Started](https://github.com/NVIDIA/DIGITS/blob/master/docs/GettingStarted.md)** training DNNs and deploying them with high performance.
-
-
-<a href="https://github.com/dusty-nv/jetson-inference/blob/master/docs/deep-learning.md"><img src="https://a70ad2d16996820e6285-3c315462976343d903d5b3a03b69072d.ssl.cf2.rackcdn.com/5720072a6941032685ea18c4e4068a23" width="700"></a>
-
-NVIDIA [DIGITS](https://github.com/NVIDIA/DIGITS) is used to interactively train network models on annotated datasets in the cloud or PC, while TensorRT and Jetson are used to deploy runtime inference in the field.  Together, DIGITS and TensorRT form an effective workflow for developing and deploying deep neural networks capable of implementing advanced AI and perception. 
-
-To get started, see the DIGITS [Getting Started](https://github.com/NVIDIA/DIGITS/blob/master/docs/GettingStarted.md) guide and then the next section of the tutorial, [Getting TensorRT](#getting-tensorrt).
-
-Please install the latest DIGITS on a host PC or cloud service with NVIDIA GPU. See [developer.nvidia.com/digits](http://developer.nvidia.com/digits) for pre-built Docker images and Amazon Machine Image (AMI).
-
-## Getting TensorRT
-
-NVIDIA TensorRT is a new library available in **[JetPack 2.3](https://developer.nvidia.com/embedded/jetpack)** for optimizing and deploying production DNN's.  TensorRT performs a host of graph optimizations and takes advantage of half-precision FP16 support on TX1 to achieve up to 2X or more performance improvement versus Caffe:
-
-<a href="https://devblogs.nvidia.com/parallelforall/jetpack-doubles-jetson-tx1-deep-learning-inference/"><img src="https://a70ad2d16996820e6285-3c315462976343d903d5b3a03b69072d.ssl.cf2.rackcdn.com/91d88749a582e884926686f7a9a7f9fd" width="700"></a>
-
-And in a benchmark conducted measuring images/sec/Watts, with TensorRT Jetson TX1 is up to 20X more power efficient than traditional CPUs at deep-learning inference.  See this **[Parallel ForAll](https://devblogs.nvidia.com/parallelforall/jetpack-doubles-jetson-tx1-deep-learning-inference/)** article for a technical overview of the release.
-
-<a href="https://devblogs.nvidia.com/parallelforall/jetpack-doubles-jetson-tx1-deep-learning-inference/"><img src="https://a70ad2d16996820e6285-3c315462976343d903d5b3a03b69072d.ssl.cf2.rackcdn.com/86d79898dbb3c0664ab1fcf112da4e6e" width="700"></a>
-
-To obtain TensorRT, download the latest [JetPack](https://developer.nvidia.com/embedded/jetpack) to your PC and re-flash your Jetson (see [Jetson TX1 User Guide](http://developer.nvidia.com/embedded/dlc/l4t-24-1-jetson-tx1-user-guide)).
 
 ## Building from Source
 Provided along with this repo are TensorRT-enabled examples of running Googlenet/Alexnet on live camera feed for image recognition, and pedestrian detection networks with localization capabilities (i.e. that provide bounding boxes). 
 
-The latest source can be obtained from [GitHub](http://github.com/dusty-nv/jetson-inference) and compiled onboard Jetson TX1.
+The latest source can be obtained from [GitHub](http://github.com/S4WRXTTCS/jetson-inference) and compiled onboard Jetson TX1/TX2.
 
-> **note**:  this [branch](http://github.com/dusty-nv/jetson-inference) is verified against 
+> **note**:  this [branch](http://github.com/S4WRXTTCS/jetson-inference) is verified against 
 >        JetPack 2.3 / L4T R24.2 aarch64 (Ubuntu 16.04 LTS)
       
 #### 1. Cloning the repo
@@ -85,7 +27,7 @@ sudo apt-get install git cmake
 
 Then clone the jetson-inference repo:
 ``` bash
-git clone http://github.com/dusty-nv/jetson-inference
+git clone http://github.com/S4WRXTTCS/jetson-inference
 ```
 
 #### 2. Configuring
@@ -294,6 +236,12 @@ For a step-by-step guide to training custom DetectNets, see the **[Object Detect
 <a href="https://github.com/NVIDIA/DIGITS/tree/digits-4.0/examples/object-detection"><img src="https://a70ad2d16996820e6285-3c315462976343d903d5b3a03b69072d.ssl.cf2.rackcdn.com/0c1a5ee3ab9c4629ac61cbbe9aae3e10" width="500"></a>
 
 The DIGITS guide above uses the [KITTI](http://www.cvlibs.net/datasets/kitti/) dataset, however [MS COCO](http://mscoco.org) also has bounding data available for a variety of objects.
+
+## Running the BlackJack Camera Demo
+
+``` bash
+$ ./blackjack-camera                # by default, program will run using the correct networks
+```
 
 ## Extra Resources
 
