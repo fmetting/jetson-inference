@@ -183,3 +183,13 @@ Here is what it should look like. This image shows an 11x17 piece of paper I use
 
 <img src="https://github.com/S4WRXTTCS/jetson-inference/blob/master/data/images/BlackJack.jpg" width="900">
 
+## If you need to retrain the DetectNet based CardNet or the ImageNet AlexNet_54cards then you can add the necessary data to the following datasets, and then retrain them in Digits 5.0. 
+
+The DetectNet training data is here
+https://drive.google.com/file/d/0B8dR1eAmu3fTR3l4WkNtR0dqS0E/view?usp=sharing
+
+The ImageNet training data is here
+https://drive.google.com/file/d/0B8dR1eAmu3fTcG1mZVN4OHFNTU0/view?usp=sharing
+
+
+
