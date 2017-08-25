@@ -20,7 +20,7 @@
 #include "detectNet.h"
 #include "imageNet.h"
 
-#define DEFAULT_CAMERA -1	// -1 for onboard camera, or change to index of /dev/video V4L2 camera (>=0)	
+#define DEFAULT_CAMERA 1	// -1 for onboard camera, or change to index of /dev/video V4L2 camera (>=0)	
 		
 
 bool signal_recieved = false;
@@ -50,7 +50,7 @@ int kbhit()
 
 int main( int argc, char** argv )
 {
-	printf("dualnet-camera\n  args (%i):  ", argc);
+	printf("dualnet-camera (FM fork)\n  args (%i):  ", argc);
 
 	for( int i=0; i < argc; i++ )
 		printf("%i [%s]  ", i, argv[i]);
@@ -273,7 +273,10 @@ int main( int argc, char** argv )
 		if( !camera->ConvertRGBA(imgCUDA, &imgRGBA) )
 		printf("dualnet-camera:  failed to convert from NV12 to RGBA\n");
 
- 
+
+// FM Note: Use this #if to comment out the nnet stuff and just get live video.
+#if 1
+
 		// classify image with detectNet
 		int numBoundingBoxes = maxBoxes;
 
@@ -349,9 +352,16 @@ int main( int argc, char** argv )
 				sprintf(str, "TensorRT build %x | %s | %04.1f FPS", NV_GIE_VERSION, net->HasFP16() ? "FP16" : "FP32", display->GetFPS());
 				//sprintf(str, "GIE build %x | %s | %04.1f FPS | %05.2f%% %s", NV_GIE_VERSION, net->GetNetworkName(), display->GetFPS(), confidence * 100.0f, net->GetClassDesc(img_class));
 				display->SetTitle(str);	
-			}	
-		}	
+			}
+		}
+#else
 
+		/*if( display != NULL )
+		{
+			printf("FPS: %04.1f\n", display->GetFPS());
+		}*/
+
+#endif
 
 
 		// update display
@@ -377,7 +387,7 @@ int main( int argc, char** argv )
 				}
 
 				// draw the texture
-				texture->Render(100,100);		
+				texture->Render(10,10);		
 			}
 
 			display->EndRender();
