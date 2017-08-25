@@ -134,9 +134,15 @@ bool imageNet::loadClassInfo( const char* filename )
 // init
 bool imageNet::init( imageNet::NetworkType networkType, uint32_t maxBatchSize )
 {
-	const char* proto_file[] = { "alexnet.prototxt", "alexnet_54cards.prototxt", "googlenet.prototxt" };
-	const char* model_file[] = { "bvlc_alexnet.caffemodel", "bvlc_alexnet_54cards.caffemodel", "bvlc_googlenet.caffemodel" };
-        const char* class_file[] = { "ilsvrc12_synset_words.txt", "54cards.txt", "ilsvrc12_synset_words.txt" };      
+	#if 0
+		const char* proto_file[] = { "alexnet.prototxt", "alexnet_54cards.prototxt", "googlenet.prototxt" };
+		const char* model_file[] = { "bvlc_alexnet.caffemodel", "bvlc_alexnet_54cards.caffemodel", "bvlc_googlenet.caffemodel" };
+		const char* class_file[] = { "ilsvrc12_synset_words.txt", "54cards.txt", "ilsvrc12_synset_words.txt" };
+	#else
+		const char* proto_file[] = { "data/networks/alexnet.prototxt",          "data/networks/alexnet_54cards.prototxt",        "data/networks/googlenet.prototxt" };
+		const char* model_file[] = { "data/networks/bvlc_alexnet.caffemodel",   "data/networks/bvlc_alexnet_54cards.caffemodel", "data/networks/bvlc_googlenet.caffemodel" };
+		const char* class_file[] = { "data/networks/ilsvrc12_synset_words.txt", "data/networks/54cards.txt",                     "data/networks/ilsvrc12_synset_words.txt" };
+	#endif
 
 	/*
 	 * load and parse googlenet network definition and model file

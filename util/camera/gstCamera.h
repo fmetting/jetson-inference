@@ -45,8 +45,20 @@ public:
 	inline uint32_t GetSize() const		  { return mSize; }
 	
 	// Default resolution, unless otherwise specified during Create()
-	static const uint32_t DefaultWidth  = 1280;
-	static const uint32_t DefaultHeight = 720;
+	#if 1
+		static const uint32_t DefaultWidth  = 1280;
+		static const uint32_t DefaultHeight = 720;
+	#endif
+
+	#if 0
+		static const uint32_t DefaultWidth  = 640;//1280;
+		static const uint32_t DefaultHeight = 480;//720;
+	#endif
+
+	#if 0
+		static const uint32_t DefaultWidth  = 2592;
+		static const uint32_t DefaultHeight = 1944;
+	#endif
 	
 private:
 	static void onEOS(_GstAppSink* sink, void* user_data);

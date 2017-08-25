@@ -17,14 +17,25 @@
 
 detectNet* detectNet::Create( NetworkType networkType, float threshold  )
 {
-	if( networkType == PEDNET_MULTI )
-		return Create("multiped-500/deploy.prototxt", "multiped-500/snapshot_iter_178000.caffemodel", "multiped-500/mean.binaryproto", threshold );
-        else if( networkType == CARDNET )
-		return Create("cardnet-100/deploy.prototxt", "cardnet-100/snapshot_iter_10500.caffemodel", NULL, threshold );
-	else if( networkType == FACENET )
-		return Create("facenet-120/deploy.prototxt", "facenet-120/snapshot_iter_24000.caffemodel", NULL, threshold );
-	else /*if( networkTYpe == PEDNET )*/
-		return Create("ped-100/deploy.prototxt", "ped-100/snapshot_iter_70800.caffemodel", "ped-100/mean.binaryproto", threshold );
+	#if 0
+		if( networkType == PEDNET_MULTI )
+			return Create("multiped-500/deploy.prototxt", "multiped-500/snapshot_iter_178000.caffemodel", "multiped-500/mean.binaryproto", threshold );
+		else if( networkType == CARDNET )
+			return Create("cardnet-100/deploy.prototxt", "cardnet-100/snapshot_iter_10500.caffemodel", NULL, threshold );
+		else if( networkType == FACENET )
+			return Create("facenet-120/deploy.prototxt", "facenet-120/snapshot_iter_24000.caffemodel", NULL, threshold );
+		else /*if( networkTYpe == PEDNET )*/
+			return Create("ped-100/deploy.prototxt", "ped-100/snapshot_iter_70800.caffemodel", "ped-100/mean.binaryproto", threshold );
+	#else
+		if( networkType == PEDNET_MULTI )
+			return Create("data/networks/multiped-500/deploy.prototxt", "data/networks/multiped-500/snapshot_iter_178000.caffemodel", "data/networks/multiped-500/mean.binaryproto", threshold );
+		else if( networkType == CARDNET )
+			return Create("data/networks/cardnet-100/deploy.prototxt",  "data/networks/cardnet-100/snapshot_iter_10500.caffemodel",   NULL, threshold );
+		else if( networkType == FACENET )
+			return Create("data/networks/facenet-120/deploy.prototxt",  "data/networks/facenet-120/snapshot_iter_24000.caffemodel",   NULL, threshold );
+		else /*if( networkTYpe == PEDNET )*/
+			return Create("data/networks/ped-100/deploy.prototxt",      "data/networks/ped-100/snapshot_iter_70800.caffemodel",      "data/networks/ped-100/mean.binaryproto", threshold );
+	#endif
 }
 
 	
@@ -163,6 +174,7 @@ bool detectNet::Detect( float* rgba, uint32_t width, uint32_t height, float* bou
 		return false;
 	}
 
+	//printf("detectNet::Detect() BEFORE cudaPreImageNetMean \n");
 	
 	// downsample and convert to band-sequential BGR
 	if( CUDA_FAILED(cudaPreImageNetMean((float4*)rgba, width, height, mInputCUDA, mWidth, mHeight,
@@ -172,6 +184,8 @@ bool detectNet::Detect( float* rgba, uint32_t width, uint32_t height, float* bou
 		return false;
 	}
 	
+	//printf("detectNet::Detect() BEFORE mContext->execute \n");
+
 	// process with GIE
 	void* inferenceBuffers[] = { mInputCUDA, mOutputs[OUTPUT_CVG].CUDA, mOutputs[OUTPUT_BBOX].CUDA };
 	
@@ -181,7 +195,9 @@ bool detectNet::Detect( float* rgba, uint32_t width, uint32_t height, float* bou
 		*numBoxes = 0;
 		return false;
 	}
-	
+
+	//printf("detectNet::Detect() AFTER mContext->execute \n");
+
 	PROFILER_REPORT();
 
 	// cluster detection bboxes

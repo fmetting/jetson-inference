@@ -185,7 +185,7 @@ bool tensorNet::LoadNetwork( const char* prototxt_path, const char* model_path, 
 
 	char cache_path[512];
 	sprintf(cache_path, "%s.tensorcache", model_path);
-	printf(LOG_GIE "attempting to open cache file %s\n", cache_path);
+	printf(LOG_GIE "tensorNet::LoadNetwork(%s\n %s\n %s) :\n attempting to open cache file %s\n", prototxt_path, model_path, mean_path, cache_path);
 	
 	std::ifstream cache( cache_path );
 
